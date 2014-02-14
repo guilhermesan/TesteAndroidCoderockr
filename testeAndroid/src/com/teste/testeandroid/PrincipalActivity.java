@@ -1,5 +1,7 @@
 package com.teste.testeandroid;
 
+import com.teste.database.DatabaseManager;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -10,6 +12,7 @@ public class PrincipalActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_principal);
+		DatabaseManager.init(this);
 	}
 
 	@Override
