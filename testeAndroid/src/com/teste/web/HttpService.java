@@ -1,10 +1,14 @@
 package com.teste.web;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.SocketTimeoutException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -20,11 +24,15 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ParseException;
+import android.os.Environment;
 
 public class HttpService {
 	
@@ -196,6 +204,55 @@ public class HttpService {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	
+	
+	public String downloadImage(String src,String nome) {
+	    try {    	
+	    	URL url = new URL(src.replace(" ", "%20"));
+            HttpGet httpRequest = null;
+
+            httpRequest = new HttpGet(url.toURI());
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpResponse response = (HttpResponse) httpclient.execute(httpRequest);
+
+            HttpEntity entity = response.getEntity();
+            BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
+            InputStream input = bufHttpEntity.getContent();
+
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+	        if (bitmap == null)
+	        	return "";
+	        	
+	        File file = new File(PATH_IMAGES());
+	        
+	        if (!file.exists())
+	        	file.mkdirs();
+	        file = new File(file,nome); 
+	        if (!file.exists())
+	        	file.createNewFile();
+	        String path = file.getPath();
+	        FileOutputStream fileOutput = new FileOutputStream(file);
+	        
+	        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fileOutput);
+	        fileOutput.close();
+	        return path;
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return "";
+	    } catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
+	}
+	
+
+	public static  String PATH_IMAGES(){
+		File SDCardRoot = Environment.getExternalStorageDirectory();
+		return SDCardRoot+"/testeAndroid/Images/";
+	
 	}
 	
 }
