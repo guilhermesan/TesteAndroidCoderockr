@@ -1,9 +1,9 @@
 package com.teste.testeandroid;
 
+import java.sql.SQLException;
 import java.util.List;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,16 +12,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.AbsListView;
+
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+
+
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.TextView;
 
 
 import com.actionbarsherlock.app.ActionBar;
@@ -32,7 +29,10 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 import com.sherlock.navigationdrawer.compat.SherlockActionBarDrawerToggle;
+import com.teste.database.DatabaseManager;
 import com.teste.model.Marca;
+
+
 
 
 
@@ -43,10 +43,11 @@ public class MarcasFragment extends SherlockFragment {
 	
 	private DrawerLayout mDrawerLayout;
 	public  ListView lvMarcas;
-	public  ListView mContent;
+	private TextView tvDescription;
+	public  LinearLayout llPrincipal;
 	public static MarcasFragment instancia;
 	private LinearLayout llMenuEsquerdo;
-	private Button btnNovoFiltro; 
+	private MarcaArrayAdapter adapter;
 
 	private ActionBarHelper mActionBar;
 
@@ -62,6 +63,18 @@ public class MarcasFragment extends SherlockFragment {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
 		setHasOptionsMenu(true);
+		try {
+			DatabaseManager.init(this.getActivity());
+			List<Marca> list = DatabaseManager.getHelper().getMarcaDao().queryForAll();
+			adapter = new MarcaArrayAdapter(this.getActivity());
+			for (Marca marca : list){
+				adapter.add(marca);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	
 	}
 	
@@ -82,6 +95,7 @@ public class MarcasFragment extends SherlockFragment {
 		View view = inflater.inflate(R.layout.marcas_fragment, container, false);
 		mDrawerLayout = (DrawerLayout) view.findViewById(R.id.drawer_layout);
 		lvMarcas = (ListView)view.findViewById(R.id.lvMarcas);
+		lvMarcas.setOnItemClickListener(new DrawerItemClickListener());
 		//tratar Abertura e fechamento do Menu lateral com movimento do dedo
 		mDrawerLayout.setDrawerListener(new onDrawerListener());
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -90,12 +104,13 @@ public class MarcasFragment extends SherlockFragment {
 		mActionBar = createActionBarHelper();
 		mActionBar.init();
 
+		llMenuEsquerdo = (LinearLayout) view.findViewById(R.id.llMenuEsquerdo);
+		llPrincipal = (LinearLayout) view.findViewById(R.id.llPrincipal);
+		tvDescription = (TextView) view.findViewById(R.id.tvDescription);
 		
 		
 		mDrawerToggle = new SherlockActionBarDrawerToggle(this.getActivity(), mDrawerLayout, R.drawable.ic_drawer_light, R.string.abs__action_bar_home_description,R.string.abs__action_bar_home_description );
 		mDrawerToggle.syncState();
-		MarcaArrayAdapter adapter = new MarcaArrayAdapter(this.getActivity());
-		adapter.add(new Marca());
 		lvMarcas.setAdapter(adapter);
 		return view;
 	}
@@ -121,15 +136,14 @@ public class MarcasFragment extends SherlockFragment {
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
-	/**
-	 * This list item click listener implements very simple view switching by
-	 * changing the primary content text. The drawer is closed when a selection
-	 * is made.
-	 */
+	
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			Marca marca = ((Marca)view.getTag());
+			mActionBar.setTitle(marca.getName());
 			mDrawerLayout.closeDrawer(llMenuEsquerdo);
+			tvDescription.setText(marca.getDescription());
 		}
 	}
 
@@ -158,10 +172,7 @@ public class MarcasFragment extends SherlockFragment {
 		}
 	}
 
-	/**
-	 * Create a compatible helper that will manipulate the action bar if
-	 * available.
-	 */
+	
 	private ActionBarHelper createActionBarHelper() {
 		return new ActionBarHelper();
 	}
