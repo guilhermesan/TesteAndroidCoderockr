@@ -32,12 +32,17 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 import com.sherlock.navigationdrawer.compat.SherlockActionBarDrawerToggle;
+import com.teste.model.Marca;
+
+
+
+
 
 
 public class MarcasFragment extends SherlockFragment {
 	
 	private DrawerLayout mDrawerLayout;
-	public  ListView listView;
+	public  ListView lvMarcas;
 	public  ListView mContent;
 	public static MarcasFragment instancia;
 	private LinearLayout llMenuEsquerdo;
@@ -65,18 +70,33 @@ public class MarcasFragment extends SherlockFragment {
 	}
 	
 	public void carregaMenu(){
-		listView.setCacheColorHint(0);
-		listView.setScrollingCacheEnabled(false);
-		listView.setScrollContainer(false);
-		listView.setFastScrollEnabled(true);
-		listView.setSmoothScrollbarEnabled(true);
+		lvMarcas.setCacheColorHint(0);
+		lvMarcas.setScrollingCacheEnabled(false);
+		lvMarcas.setScrollContainer(false);
+		lvMarcas.setFastScrollEnabled(true);
+		lvMarcas.setSmoothScrollbarEnabled(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.marcas_fragment, container, false);
+		mDrawerLayout = (DrawerLayout) view.findViewById(R.id.drawer_layout);
+		lvMarcas = (ListView)view.findViewById(R.id.lvMarcas);
+		//tratar Abertura e fechamento do Menu lateral com movimento do dedo
+		mDrawerLayout.setDrawerListener(new onDrawerListener());
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		
+		//carregaMenu();
+		mActionBar = createActionBarHelper();
+		mActionBar.init();
 
-				
+		
+		
+		mDrawerToggle = new SherlockActionBarDrawerToggle(this.getActivity(), mDrawerLayout, R.drawable.ic_drawer_light, R.string.abs__action_bar_home_description,R.string.abs__action_bar_home_description );
+		mDrawerToggle.syncState();
+		MarcaArrayAdapter adapter = new MarcaArrayAdapter(this.getActivity());
+		adapter.add(new Marca());
+		lvMarcas.setAdapter(adapter);
 		return view;
 	}
 	
@@ -89,10 +109,6 @@ public class MarcasFragment extends SherlockFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		/*
-		 * The action bar home/up action should open or close the drawer.
-		 * mDrawerToggle will take care of this.
-		 */
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
@@ -117,17 +133,8 @@ public class MarcasFragment extends SherlockFragment {
 		}
 	}
 
-	/**
-	 * A drawer listener can be used to respond to drawer events such as
-	 * becoming fully opened or closed. You should always prefer to perform
-	 * expensive operations such as drastic relayout when no animation is
-	 * currently in progress, either before or after the drawer animates.
-	 * 
-	 * When using ActionBarDrawerToggle, all DrawerLayout listener methods
-	 * should be forwarded if the ActionBarDrawerToggle is not used as the
-	 * DrawerLayout listener directly.
-	 */
-	private class DemoDrawerListener implements DrawerLayout.DrawerListener {
+
+	private class onDrawerListener implements DrawerLayout.DrawerListener {
 		@Override
 		public void onDrawerOpened(View drawerView) {
 			mDrawerToggle.onDrawerOpened(drawerView);

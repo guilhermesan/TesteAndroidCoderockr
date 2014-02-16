@@ -12,6 +12,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.teste.model.Marca;
 import com.teste.model.Product;
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
@@ -24,8 +25,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	    // the DAO object we use to access the SimpleData table
 	
 	 private Dao<Product, Integer> productDao = null;
+	 private Dao<Marca, Integer> marcaDao = null;
 	 	 
-	 public Dao<Product, Integer> getMunicipioDao() {
+	 public Dao<Product, Integer> getProductDao() {
 	        if (null == productDao) {
 	            try {
 	            	productDao = getDao(Product.class);
@@ -35,6 +37,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	        }
 	        return productDao;
 	    }
+	 
+	 public Dao<Marca, Integer> getMarcaDao() {
+	        if (null == marcaDao) {
+	            try {
+	            	marcaDao = getDao(Marca.class);
+	            }catch (java.sql.SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	        return marcaDao;
+	    }
+	 
 	 
 
 	public DatabaseHelper(Context context) {
@@ -48,6 +62,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			ConnectionSource connectionSource) {
 		try {         
             TableUtils.createTableIfNotExists(connectionSource, Product.class);
+            TableUtils.createTableIfNotExists(connectionSource, Marca.class);
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
             throw new RuntimeException(e);

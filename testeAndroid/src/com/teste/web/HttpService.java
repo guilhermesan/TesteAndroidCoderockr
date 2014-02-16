@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.SocketTimeoutException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -47,33 +50,23 @@ public class HttpService {
 	
 	
 	
-	public String call(){
+	public String call() throws ClientProtocolException, IOException{
 		 HttpClient httpclient = new DefaultHttpClient();
 		 httpclient.getParams().setIntParameter("http.socket.timeout", 2000000);
 		 httpclient.getParams().setIntParameter("http.connection.timeout", 10000);
-		 HttpPost httppost;
+		 
+		 HttpGet httppost;
+		 
+		 
+		 httppost = new HttpGet(url);
+		 httppost.addHeader("Content-type", "application/x-www-form-urlencoded");
+		 httppost.addHeader("Authorization", "85e4a615f62c711d3aac0e7def5b4903");   	
 		
-		 httppost = new HttpPost(url);
-		
-		    	
-		 try {  
-		     HttpResponse webServerAnswer = httpclient.execute(httppost);  
-		     String result = getResponseBody(webServerAnswer);
-		     return result;
+	     HttpResponse webServerAnswer = httpclient.execute(httppost);  
+	     String result = getResponseBody(webServerAnswer);
+	     return  URLDecoder.decode(result,"UTF-8");
 		       
-		 }catch (ConnectTimeoutException e){
-			 return "timeout";
-			 
-		 }catch (SocketTimeoutException e) {
-			 return "timeout";
-			// TODO: handle exception
-		 }catch (ClientProtocolException e) {  
-			 return e.getMessage();
-		     //Deal with it  
-		 } catch (IOException e) {  
-			 return e.getMessage();
-		     //Deal with it  
-		 } 
+		
 		
 		
 	}

@@ -27,12 +27,99 @@ public class Marca extends Model {
 	  @DatabaseField
 	  private String image;
 	  
+	  @DatabaseField
+	  private String imagePath;
 	  
-	 @ForeignCollectionField
-	 private ForeignCollection<Product> product_collection;
+	  
+	  @ForeignCollectionField
+	  private Collection<Product> product_collection;
 	
 	  
 	
+
+	public int getId() {
+		return id;
+	}
+
+
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+
+
+	public String getDescription() {
+		return description;
+	}
+
+
+
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+
+
+
+	public String getName() {
+		return name;
+	}
+
+
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+
+
+	public String getImage() {
+		return image;
+	}
+
+
+
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+
+
+
+	public String getImagePath() {
+		return imagePath;
+	}
+
+
+
+
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
+
+
+
+
+	public Collection<Product> getProduct_collection() {
+		return product_collection;
+	}
+
+
+
+
+	public void setProduct_collection(Collection<Product> product_collection) {
+		this.product_collection = product_collection;
+	}
+
+
+
 
 	@Override
 	public ValidacaoModel validacao() {
