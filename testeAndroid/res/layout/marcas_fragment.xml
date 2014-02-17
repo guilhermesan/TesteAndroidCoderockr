@@ -9,13 +9,21 @@
         android:id="@+id/llPrincipal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingLeft="4dp"
+        android:paddingTop="4dp"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/tvDescription"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-       
+            android:layout_height="wrap_content"
+             />
+        <ListView
+            android:id="@+id/lvProdutos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="4dp" >
+        </ListView>
 
     </LinearLayout>
    

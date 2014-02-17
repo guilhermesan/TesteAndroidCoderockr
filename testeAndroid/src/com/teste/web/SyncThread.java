@@ -45,10 +45,11 @@ public class SyncThread extends Thread{
 					marca.setImagePath(ws.downloadImage(marca.getImage(), "marca_"+marca.getId()+".png"));
 					DatabaseManager.getHelper().getMarcaDao().createOrUpdate(marca);
 					Message message = new Message(); 
-					message.what = 1; 
+					message.what = 1;//nova marca baixada 
 					handler.sendMessage(message);
 					for (Product produto : marca.getProduct_collection()){
 						produto.setImagePath(ws.downloadImage(produto.getSnapshot(), "marca_"+marca.getId()+"product_"+produto.getId()+".png"));
+						produto.setMarca(marca);
 						DatabaseManager.getHelper().getProductDao().createOrUpdate(produto);
 						message = new Message(); 
 						message.what = 2; 

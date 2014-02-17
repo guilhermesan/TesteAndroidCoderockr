@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.sherlock.navigationdrawer.compat.SherlockActionBarDrawerToggle;
 import com.teste.database.DatabaseManager;
 import com.teste.model.Marca;
+import com.teste.model.Product;
 
 
 
@@ -42,12 +44,13 @@ import com.teste.model.Marca;
 public class MarcasFragment extends SherlockFragment {
 	
 	private DrawerLayout mDrawerLayout;
-	public  ListView lvMarcas;
+	public  ListView lvMarcas,lvProdutos;
 	private TextView tvDescription;
 	public  LinearLayout llPrincipal;
 	public static MarcasFragment instancia;
 	private LinearLayout llMenuEsquerdo;
 	private MarcaArrayAdapter adapter;
+	private ProdutoUmaColunaArrayAdapter produtoAdapter;
 
 	private ActionBarHelper mActionBar;
 
@@ -67,8 +70,10 @@ public class MarcasFragment extends SherlockFragment {
 			DatabaseManager.init(this.getActivity());
 			List<Marca> list = DatabaseManager.getHelper().getMarcaDao().queryForAll();
 			adapter = new MarcaArrayAdapter(this.getActivity());
+			produtoAdapter = new ProdutoUmaColunaArrayAdapter(this.getActivity());
 			for (Marca marca : list){
 				adapter.add(marca);
+				
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -112,6 +117,8 @@ public class MarcasFragment extends SherlockFragment {
 		mDrawerToggle = new SherlockActionBarDrawerToggle(this.getActivity(), mDrawerLayout, R.drawable.ic_drawer_light, R.string.abs__action_bar_home_description,R.string.abs__action_bar_home_description );
 		mDrawerToggle.syncState();
 		lvMarcas.setAdapter(adapter);
+		lvProdutos = (ListView)view.findViewById(R.id.lvProdutos);
+		
 		return view;
 	}
 	
@@ -144,6 +151,11 @@ public class MarcasFragment extends SherlockFragment {
 			mActionBar.setTitle(marca.getName());
 			mDrawerLayout.closeDrawer(llMenuEsquerdo);
 			tvDescription.setText(marca.getDescription());
+			produtoAdapter.clear();
+			for (Product produto : marca.getProduct_collection()){
+				produtoAdapter.add(produto);
+			}
+			lvProdutos.setAdapter(produtoAdapter);
 		}
 	}
 

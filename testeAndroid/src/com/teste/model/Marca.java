@@ -31,7 +31,7 @@ public class Marca extends Model {
 	  private String imagePath;
 	  
 	  
-	  @ForeignCollectionField
+	  @ForeignCollectionField(eager=true)
 	  private Collection<Product> product_collection;
 	
 	  
