@@ -1,6 +1,7 @@
 package com.teste.testeandroid;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -22,6 +23,12 @@ public class MarcaArrayAdapter extends ArrayAdapter<Marca> {
 	
 	Context ctx;
 	
+	public boolean isTablet(Context context) {  
+        return (context.getResources().getConfiguration().screenLayout   
+                & Configuration.SCREENLAYOUT_SIZE_MASK)    
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE; 
+    }
+	
 	public MarcaArrayAdapter(Context context) {
 		super(context,android.R.layout.simple_list_item_1);
 		ctx = context;
@@ -34,7 +41,10 @@ public class MarcaArrayAdapter extends ArrayAdapter<Marca> {
 		Marca marca = getItem(position);
 		if (rowView == null){
 			LayoutInflater inflater = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			rowView = inflater.inflate(R.layout.item_list_marcas, parent,false);
+			if (!isTablet(ctx))
+				rowView = inflater.inflate(R.layout.item_list_marcas, parent,false);
+			else
+				rowView = inflater.inflate(R.layout.item_list_marcas_tablet, parent,false);
 			
 			Options  op = new BitmapFactory.Options();
 			op.inPreferredConfig = Config.RGB_565;

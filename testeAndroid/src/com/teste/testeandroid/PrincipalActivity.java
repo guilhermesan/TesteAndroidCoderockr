@@ -7,6 +7,8 @@ import com.teste.web.SyncThread;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,15 +18,16 @@ import android.widget.Toast;
 public class PrincipalActivity extends SherlockFragmentActivity {
 
 	ProgressDialog pd;
+	public static boolean sincronizou = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
-		//FragmentManager fgtManager = getSupportFragmentManager();
-		//android.support.v4.app.Fragment fragment = null;
-		
-		setContentView(R.layout.activity_principal);
+		if (!isTablet(this))
+			setContentView(R.layout.activity_principal);
+		else
+			setContentView(R.layout.activity_principal_tablet);
 		DatabaseManager.init(this);
 		
 		Handler handler = new Handler(){
@@ -36,15 +39,33 @@ public class PrincipalActivity extends SherlockFragmentActivity {
 
 			
 		};
-		
-		SyncThread sync = new SyncThread(handler);
-		sync.start();
-		pd = new ProgressDialog(this);
-		pd.setTitle("Sincronizando");
-		pd.setMessage("Baixando dados do servidor!");
-		pd.show();
+		if (!sincronizou){
+			SyncThread sync = new SyncThread(handler);
+			sync.start();
+			pd = new ProgressDialog(this);
+			pd.setTitle("Sincronizando");
+			pd.setMessage("Baixando dados do servidor!");
+			pd.show();
+			sincronizou = true;
+		}
 		
 	}
+	
+	
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+	}
+
+
+
+	public boolean isTablet(Context context) {  
+        return (context.getResources().getConfiguration().screenLayout   
+                & Configuration.SCREENLAYOUT_SIZE_MASK)    
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE; 
+    }
 	
 	protected void toast(String txt){
 		Toast.makeText(getApplicationContext(), txt, Toast.LENGTH_SHORT).show();
