@@ -72,20 +72,7 @@ public class MarcasFragment extends SherlockFragment {
 		setRetainInstance(true);
 		setHasOptionsMenu(true);
 		instancia = this;
-		try {
-			DatabaseManager.init(this.getActivity());
-			List<Marca> list = DatabaseManager.getHelper().getMarcaDao().queryForAll();
-			adapter = new MarcaArrayAdapter(this.getActivity());
-			produtoAdapter = new ProdutoUmaColunaArrayAdapter(this.getActivity());
-			for (Marca marca : list){
-				adapter.add(marca);
-				PrincipalActivity.marcaAtual = marca;
-			}
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		atualizaListaMarcas();
 		
 	
 	}
@@ -164,7 +151,25 @@ public class MarcasFragment extends SherlockFragment {
 		}
 	}
 	
+	public void atualizaListaMarcas(){
+		try {
+			DatabaseManager.init(this.getActivity());
+			List<Marca> list = DatabaseManager.getHelper().getMarcaDao().queryForAll();
+			adapter = new MarcaArrayAdapter(this.getActivity());
+			produtoAdapter = new ProdutoUmaColunaArrayAdapter(this.getActivity());
+			for (Marca marca : list){
+				adapter.add(marca);
+				PrincipalActivity.marcaAtual = marca;
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void atualizaMarca(Marca marca){
+		
 		mActionBar.setTitle(marca.getName());
 		mDrawerLayout.closeDrawer(llMenuEsquerdo);
 		tvDescription.setText(marca.getDescription());
@@ -174,6 +179,7 @@ public class MarcasFragment extends SherlockFragment {
 			produtoAdapter.add(produto);
 		}
 		lvProdutos.setAdapter(produtoAdapter);
+		lvMarcas.setAdapter(adapter);
 	}
 
 

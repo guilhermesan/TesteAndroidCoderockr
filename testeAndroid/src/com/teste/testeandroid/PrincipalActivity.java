@@ -47,7 +47,7 @@ public class PrincipalActivity extends SherlockFragmentActivity {
 			SyncThread sync = new SyncThread(handler);
 			sync.start();
 			toast("Sincronizando dados com o servidor");
-			sincronizou = true;
+			
 		}else{
 			setSupportProgressBarIndeterminateVisibility(false);
 		}
@@ -94,12 +94,16 @@ public class PrincipalActivity extends SherlockFragmentActivity {
 			break;	
 		case 3:
 			toast("Sincronização concluída");
+			sincronizou = true;
 			setSupportProgressBarIndeterminateVisibility(false);
 			if (marcaAtual != null){
-				if (isTablet(this))
+				if (isTablet(this)){
+					MarcasFragmentTablet.instancia.atualizaListaMarcas();
 					MarcasFragmentTablet.instancia.atualizaMarca(this.marcaAtual);
-				else
+				}else{
+					MarcasFragment.instancia.atualizaListaMarcas();
 					MarcasFragment.instancia.atualizaMarca(this.marcaAtual);
+				}
 			}
 			break;
 
