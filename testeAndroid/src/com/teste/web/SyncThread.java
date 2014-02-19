@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.teste.database.DatabaseManager;
 import com.teste.model.Marca;
 import com.teste.model.Product;
+import com.teste.testeandroid.PrincipalActivity;
 
 
 
@@ -55,7 +56,9 @@ public class SyncThread extends Thread{
 						message.what = 2; 
 						handler.sendMessage(message);
 					}
+					PrincipalActivity.marcaAtual = marca;
 				}
+				
 				Message message = new Message(); 
 				message.what = 3; 
 				handler.sendMessage(message);

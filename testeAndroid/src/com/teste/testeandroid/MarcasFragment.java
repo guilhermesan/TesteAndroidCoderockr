@@ -4,7 +4,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 
+import android.app.Activity;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +16,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 
 import android.widget.AdapterView;
 
@@ -28,6 +32,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
 
 import com.sherlock.navigationdrawer.compat.SherlockActionBarDrawerToggle;
 import com.teste.database.DatabaseManager;
@@ -66,6 +71,7 @@ public class MarcasFragment extends SherlockFragment {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
 		setHasOptionsMenu(true);
+		instancia = this;
 		try {
 			DatabaseManager.init(this.getActivity());
 			List<Marca> list = DatabaseManager.getHelper().getMarcaDao().queryForAll();
@@ -105,7 +111,9 @@ public class MarcasFragment extends SherlockFragment {
 		mDrawerLayout.setDrawerListener(new onDrawerListener());
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 		
-		//carregaMenu();
+		SearchView search = (SearchView)view.findViewById(R.id.searchCategoria);
+		search.setQueryHint("Categoria");
+		search.setIconified(false);
 		mActionBar = createActionBarHelper();
 		mActionBar.init();
 
@@ -118,7 +126,7 @@ public class MarcasFragment extends SherlockFragment {
 		mDrawerToggle.syncState();
 		lvMarcas.setAdapter(adapter);
 		lvProdutos = (ListView)view.findViewById(R.id.lvProdutos);
-		
+		lvProdutos.setDivider(null);
 		return view;
 	}
 	
@@ -127,8 +135,12 @@ public class MarcasFragment extends SherlockFragment {
 		inflater = ((SherlockFragmentActivity)getActivity()).getSupportMenuInflater();
 		inflater.inflate(R.menu.principal, menu);
 		super.onCreateOptionsMenu(menu, inflater);
+		
+        
+        
 	}
-
+	
+	 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
@@ -152,11 +164,17 @@ public class MarcasFragment extends SherlockFragment {
 			mDrawerLayout.closeDrawer(llMenuEsquerdo);
 			tvDescription.setText(marca.getDescription());
 			produtoAdapter.clear();
-			for (Product produto : marca.getProduct_collection()){
-				produtoAdapter.add(produto);
-			}
-			lvProdutos.setAdapter(produtoAdapter);
+			atualizaMarca(marca);
+			
 		}
+	}
+	
+	public void atualizaMarca(Marca marca){
+		mActionBar.setTitle(marca.getName());
+		for (Product produto : marca.getProduct_collection()){
+			produtoAdapter.add(produto);
+		}
+		lvProdutos.setAdapter(produtoAdapter);
 	}
 
 
@@ -186,48 +204,11 @@ public class MarcasFragment extends SherlockFragment {
 
 	
 	private ActionBarHelper createActionBarHelper() {
-		return new ActionBarHelper();
+		return new ActionBarHelper(getActivity());
 	}
 
 	
 
-	private class ActionBarHelper {
-		private final ActionBar mActionBar;
-		private CharSequence mDrawerTitle;
-		private CharSequence mTitle;
-
-		private ActionBarHelper() {
-			mActionBar = ((SherlockFragmentActivity)getActivity()).getSupportActionBar();
-		}
-
-		public void init() {
-			mActionBar.setDisplayHomeAsUpEnabled(true);
-			mActionBar.setHomeButtonEnabled(true);
-			mTitle = mDrawerTitle = getActivity().getTitle();
-		}
-
-		/**
-		 * When the drawer is closed we restore the action bar state reflecting
-		 * the specific contents in view.
-		 */
-		public void onDrawerClosed() {
-			mActionBar.setTitle(mTitle);
-		}
-
-		/**
-		 * When the drawer is open we set the action bar to a generic title. The
-		 * action bar should only contain data relevant at the top level of the
-		 * nav hierarchy represented by the drawer, as the rest of your content
-		 * will be dimmed down and non-interactive.
-		 */
-		public void onDrawerOpened() {
-			mActionBar.setTitle(mDrawerTitle);
-		}
-
-		public void setTitle(CharSequence title) {
-			mTitle = title;
-		}
-	}
 	
 	
 	

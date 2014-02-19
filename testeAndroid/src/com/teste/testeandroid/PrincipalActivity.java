@@ -1,7 +1,9 @@
 package com.teste.testeandroid;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Window;
 import com.teste.database.DatabaseManager;
+import com.teste.model.Marca;
 import com.teste.web.SyncThread;
 
 
@@ -19,11 +21,13 @@ public class PrincipalActivity extends SherlockFragmentActivity {
 
 	ProgressDialog pd;
 	public static boolean sincronizou = false;
+	public static Marca marcaAtual;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		if (!isTablet(this))
 			setContentView(R.layout.activity_principal);
 		else
@@ -42,10 +46,7 @@ public class PrincipalActivity extends SherlockFragmentActivity {
 		if (!sincronizou){
 			SyncThread sync = new SyncThread(handler);
 			sync.start();
-			pd = new ProgressDialog(this);
-			pd.setTitle("Sincronizando");
-			pd.setMessage("Baixando dados do servidor!");
-			pd.show();
+			toast("Sincronizando dados com o servidor");
 			sincronizou = true;
 		}
 		
@@ -74,18 +75,24 @@ public class PrincipalActivity extends SherlockFragmentActivity {
 	private void processaMsg(Message msg) {
 		switch (msg.what) {
 		case 0:
-			pd.cancel();
 			toast("Não foi possível conectar-se com o servidor");
+			setSupportProgressBarIndeterminateVisibility(false);
 			break;
 		case 1:
-			toast("Nova marca recebida");
+			//toast("Nova marca recebida");
 			break;
 		case 2:
-			toast("Novo produto recebido");
+			//toast("Novo produto recebido");
 			break;	
 		case 3:
-			pd.cancel();
 			toast("Sincronização concluída");
+			setSupportProgressBarIndeterminateVisibility(false);
+			if (marcaAtual != null){
+				if (isTablet(this))
+					MarcasFragmentTablet.instancia.atualizaMarca(this.marcaAtual);
+				else
+					MarcasFragment.instancia.atualizaMarca(this.marcaAtual);
+			}
 			break;
 
 		default:
