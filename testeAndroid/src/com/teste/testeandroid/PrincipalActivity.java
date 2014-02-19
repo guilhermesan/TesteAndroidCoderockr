@@ -48,6 +48,14 @@ public class PrincipalActivity extends SherlockFragmentActivity {
 			sync.start();
 			toast("Sincronizando dados com o servidor");
 			sincronizou = true;
+		}else{
+			setSupportProgressBarIndeterminateVisibility(false);
+		}
+		if (marcaAtual != null){
+			if (isTablet(this))
+				MarcasFragmentTablet.instancia.atualizaMarca(this.marcaAtual);
+			else
+				MarcasFragment.instancia.atualizaMarca(this.marcaAtual);
 		}
 		
 	}

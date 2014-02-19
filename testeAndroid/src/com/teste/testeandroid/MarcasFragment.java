@@ -79,8 +79,9 @@ public class MarcasFragment extends SherlockFragment {
 			produtoAdapter = new ProdutoUmaColunaArrayAdapter(this.getActivity());
 			for (Marca marca : list){
 				adapter.add(marca);
-				
+				PrincipalActivity.marcaAtual = marca;
 			}
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,13 +94,7 @@ public class MarcasFragment extends SherlockFragment {
 		return getResources().getString(idString);
 	}
 	
-	public void carregaMenu(){
-		lvMarcas.setCacheColorHint(0);
-		lvMarcas.setScrollingCacheEnabled(false);
-		lvMarcas.setScrollContainer(false);
-		lvMarcas.setFastScrollEnabled(true);
-		lvMarcas.setSmoothScrollbarEnabled(true);
-	}
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,6 +122,8 @@ public class MarcasFragment extends SherlockFragment {
 		lvMarcas.setAdapter(adapter);
 		lvProdutos = (ListView)view.findViewById(R.id.lvProdutos);
 		lvProdutos.setDivider(null);
+		if (PrincipalActivity.marcaAtual != null)
+			atualizaMarca(PrincipalActivity.marcaAtual);
 		return view;
 	}
 	
@@ -160,16 +157,18 @@ public class MarcasFragment extends SherlockFragment {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			Marca marca = ((Marca)view.getTag());
-			mActionBar.setTitle(marca.getName());
-			mDrawerLayout.closeDrawer(llMenuEsquerdo);
-			tvDescription.setText(marca.getDescription());
-			produtoAdapter.clear();
+			
+			
 			atualizaMarca(marca);
 			
 		}
 	}
 	
 	public void atualizaMarca(Marca marca){
+		mActionBar.setTitle(marca.getName());
+		mDrawerLayout.closeDrawer(llMenuEsquerdo);
+		tvDescription.setText(marca.getDescription());
+		produtoAdapter.clear();
 		mActionBar.setTitle(marca.getName());
 		for (Product produto : marca.getProduct_collection()){
 			produtoAdapter.add(produto);
